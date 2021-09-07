@@ -1,0 +1,27 @@
+---
+- hosts: nodes
+  vars:
+    grub_path: /etc/default/grub
+  tasks:
+  - name: Get parameters 
+    lineinfile:
+      path: "{{ grub_path }}"
+      state: present
+      regexp: (GRUB_CMDLINE_LINUX=\".*?)(\s*{{ item }}=\d+)(.*\")$
+      line: '\g<1>\g<3>'
+      backrefs: yes
+    loop:
+      - biosdevname
+      - net\.ifnames
+  - name: Add parameters
+    lineinfile:
+      path: "{{ grub_path }}"
+      state: present
+      regexp: '^(GRUB_CMDLINE_LINUX=\".*)(\")$'
+      line: '\g<1> {{ item }}\g<2>'
+      backrefs: yes
+    loop:
+      - biosdevname=0
+      - net.ifnames=0
+  - name: Save changes
+    shell: grub2-mkconfig -o "{{ grub_path }}"

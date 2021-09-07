@@ -1,0 +1,38 @@
+---
+- hosts: nodes
+  vars:
+   - service:
+     - httpd
+     - firewalld
+  tasks:
+  - name: Install httpd and firewalld
+    yum: 
+      name: "{{ service }}"
+      state: latest
+  - name: Enable httpd and firewalld services
+    service:
+      name: "{{ service }}"
+      enabled: yes
+      state: started
+  - name: Check httpd and firewalld services
+    service_facts:
+  - debug:
+    var: ansible_facts.services["httpd.service"]
+    var: ansible_facts.services["firewalld.service"]
+  - name: Create index.html
+    lineinfile:
+      path: /var/www/html/index.html
+      line: "Welcome to my web server"
+      create: yes
+  - name: Open http
+      firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+        immediate: yes
+  - name: Open https
+      firewalld:
+        service: https
+        permanent: yes
+        state: enabled
+        immediate: yes

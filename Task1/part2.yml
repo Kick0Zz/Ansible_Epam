@@ -1,0 +1,26 @@
+---
+- hosts: nodes
+  vars:
+   - service:
+     - httpd
+  tasks:
+  - name: Remove httpd
+    yum: 
+      name: "{{ service }}"
+      state: absent
+  - name: Remove index.html
+    file:
+      name: /var/www/html/index.html
+      state: absent
+  - name: Close http
+      firewalld:
+        service: http
+        permanent: yes
+        state: disabled
+        immediate: yes
+  - name: Close https
+      firewalld:
+        service: https
+        permanent: yes
+        state: disabled
+        immediate: yes
