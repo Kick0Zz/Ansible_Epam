@@ -9,11 +9,15 @@
     yum: 
       name: "{{ service }}"
       state: latest
+    with_items:
+      - "{{ service }}"
   - name: Enable httpd and firewalld services
     service:
       name: "{{ service }}"
       enabled: yes
       state: started
+    with_items:
+      - "{{ service }}"
   - name: Check httpd and firewalld services
     service_facts:
   - debug:
