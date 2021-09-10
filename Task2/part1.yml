@@ -1,0 +1,23 @@
+---
+- hosts: nodes
+  vars:
+   - user_name:
+     - Alice
+     - Bob
+     - Carol
+  tasks:
+  - name: Create user "{{ user_name }}"
+    user:
+      name: "{{ user_name }}"
+      comment: "{{ user_name }}@example.com"
+      password:  !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          36303139636461653863313866323531633466633734353031663730613136653434346236326439
+          3731333637333266663966313539653865376536323762300a383933353235633539333631656534
+          32326461643233363439666461626361323031363237313365336666376438353232383031623562
+          3434316162643465310a343164383930656165663563363431356534336338663966316362656532
+          3062
+      home: "/home/{{ user_name }}"
+      update_password: on_create
+    with_items:
+      - "{{ user_name }}"
