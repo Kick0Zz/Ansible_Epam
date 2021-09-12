@@ -1,0 +1,53 @@
+---
+  - name: Install vsftpd and firewalld
+    yum: 
+      name: "{{ service }}"
+      state: latest
+    with_items:
+      - "{{ service }}"
+  - name: Enable vsftpd and firewalld services
+    service:
+      name: "{{ service }}"
+      enabled: yes
+      state: started
+    with_items:
+      - "{{ service }}"
+  - name: Check vsftpd and firewalld services
+    service_facts:
+  - debug:
+    var: ansible_facts.services["vsftpd.service"]
+    var: ansible_facts.services["firewalld.service"]
+  - name: Create vsftpd config file
+    template:
+      src: vsftpd.j2
+      dest: /etc/vsftpd/vsftpd.conf
+  - name: Creating ftp directory
+    file:
+      state: directory
+      path: /var/ftp/pub
+      mode: 0755
+      setype: public_content_rw_t
+  - name: Creating ftp upload directory
+    file:
+      state: directory
+      path: /var/ftp/pub/upload
+      mode: 0777
+      setype: public_content_rw_t
+  - name: Install python SElinux utils
+    yum:
+      name: policycoreutils-python-utils
+      state: present
+  - name: Add SELinux context
+    seboolean:
+      name: ftpd_anon_write
+      state: on
+      persistent: yes
+    notify:
+      - Restart ftp service
+  - name: Setup ports for vsftpd
+    firewalld:
+      service: ftp
+      permanent: yes
+      state: enabled
+    notify: 
+      - Restart firewall service 
