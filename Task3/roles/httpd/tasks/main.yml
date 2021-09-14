@@ -1,38 +1,38 @@
 ---
-  - name: Install vsftpd and firewalld
+  - name: Install {{ service }}
     yum: 
       name: "{{ service }}"
       state: latest
-    with_items:
-      - "{{ service }}"
-  - name: Enable vsftpd and firewalld services
+    with_items: "{{ service }}"
+  - name: Enable {{ service }} service
     service:
       name: "{{ service }}"
       enabled: yes
       state: started
-    with_items:
-      - "{{ service }}"
-  - name: Check vsftpd and firewalld services
+    with_items: "{{ service }}"
+  - name: Check httpd service
     service_facts:
-  - debug:
-    var: ansible_facts.services["vsftpd.service"]
-    var: ansible_facts.services["firewalld.service"]
-
+    - debug:
+      var: ansible_facts.services["httpd.service"]
+  - name: Check firewalld service
+    service_facts:
+    - debug:
+      var: ansible_facts.services["firewalld.service"]
   - name: Create index.html
     template:
      src: template_index_html.j2
      dest: /var/www/html/index.html
   - name: Open http
-      firewalld:
-        service: http
-        permanent: yes
-        state: enabled
-        immediate: yes
+    firewalld:
+      service: http
+      permanent: yes
+      state: enabled
+      immediate: yes
   - name: Open https
-      firewalld:
-        service: https
-        permanent: yes
-        state: enabled
-        immediate: yes
-      notify:
+    firewalld:
+      service: https
+      permanent: yes
+      state: enabled
+      immediate: yes
+    notify:
       - Restart firewall service

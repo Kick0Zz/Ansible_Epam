@@ -1,22 +1,23 @@
 ---
-  - name: Install vsftpd and firewalld
+  - name: Install {{ service }}
     yum: 
       name: "{{ service }}"
       state: latest
-    with_items:
-      - "{{ service }}"
-  - name: Enable vsftpd and firewalld services
+    with_items: "{{ service }}"
+  - name: Enable {{ service }} service
     service:
       name: "{{ service }}"
       enabled: yes
       state: started
-    with_items:
-      - "{{ service }}"
-  - name: Check vsftpd and firewalld services
+    with_items: "{{ service }}"
+  - name: Check firewalld service
     service_facts:
-  - debug:
-    var: ansible_facts.services["vsftpd.service"]
-    var: ansible_facts.services["firewalld.service"]
+    - debug:
+      var: ansible_facts.services["firewalld.service"]
+  - name: Check sftpd service
+    service_facts:
+    - debug:
+      var: ansible_facts.services["sftpd.service"]
   - name: Create vsftpd config file
     template:
       src: vsftpd.j2

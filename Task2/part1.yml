@@ -1,7 +1,7 @@
 ---
 - hosts: nodes
   vars:
-   - user_name:
+    user_name:
      - Alice
      - Bob
      - Carol
@@ -19,5 +19,4 @@
           3062
       home: "/home/{{ user_name }}"
       update_password: on_create
-    with_items:
-      - "{{ user_name }}"
+    with_items: "{{ user_name }}"
